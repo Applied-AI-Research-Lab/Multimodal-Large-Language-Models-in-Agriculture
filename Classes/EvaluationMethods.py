@@ -153,21 +153,36 @@ class EvaluationMethods:
         plt.show()
 
     """
-    Plot a heatmap showing relationships and patterns between label categories in two columns.
+        Plot a heatmap showing relationships and patterns between label categories in two columns.
 
-    Args:
-    column1 (str): The name of the first column with string labels.
-    column2 (str): The name of the second column with string labels.
+        Args:
+        column1 (str): The name of the first column with string labels.
+        column2 (str): The name of the second column with string labels.
     """
     def plot_heatmap(self, original_column, prediction_column):
         data = pd.read_csv(self.pre_path + self.dataset_path)
         cross_tab = pd.crosstab(data[original_column], data[prediction_column])
-        plt.figure(figsize=(10, 8))
+
+        plt.figure(figsize=(12, 10))
         sns.heatmap(cross_tab, annot=True, fmt='d', cmap='YlGnBu')
+
         plt.title(f'Heatmap of {original_column} vs. {prediction_column}')
         plt.xlabel(prediction_column)
         plt.ylabel(original_column)
+
+        plt.xticks(rotation=45, ha="right")
+        plt.yticks(rotation=0)
+
+        plt.tight_layout()
+
+        output_dir = "../Plots"
+        os.makedirs(output_dir, exist_ok=True)
+
+        output_path = os.path.join(output_dir, f'heatmap_{original_column}_vs_{prediction_column}.png')
+        plt.savefig(output_path, dpi=300, bbox_inches='tight')
+
         plt.show()
+        print(f"Heatmap saved at: {output_path}")
 
 
 # type = "Apple"
@@ -228,4 +243,9 @@ EVM = EvaluationMethods(dataset_path='../Datasets/' + type + '/test_set.csv')
 # print(f'ResNet50-Predictions-256-Bayesian-Optimization: ' + str(EVM.evaluate_results('Category', 'ResNet50-Predictions-256-Bayesian-Optimization', 'ResNet50-Predictions-256-Bayesian-Optimization')))
 # print(f'ResNet50-Predictions-Bayesian-Optimization: ' + str(EVM.evaluate_results('Category', 'ResNet50-Predictions-Bayesian-Optimization', 'ResNet50-Predictions-Bayesian-Optimization')))
 # print(f'ResNet50-Predictions-Bayesian-Optimization: ' + str(EVM.evaluate_results('Category', 'ResNet50-Predictions-Bayesian-Optimization', 'ResNet50-Predictions-Bayesian-Optimization')))
+
+# # # Heatmaps
+# print(EVM.plot_heatmap(original_column='Category', prediction_column='GPT-Resolution-256'))
+# print(EVM.plot_heatmap(original_column='Category', prediction_column='GPT-4o-Resolution-256'))
+# print(EVM.plot_heatmap(original_column='Category', prediction_column='ResNet50-Predictions-256-Bayesian-Optimization'))
 
