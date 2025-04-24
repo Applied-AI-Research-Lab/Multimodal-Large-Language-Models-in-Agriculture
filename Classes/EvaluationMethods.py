@@ -1,5 +1,7 @@
 import pandas as pd
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import matplotlib
+matplotlib.use('Agg')  # Use Agg backend to avoid PyCharm compatibility issues
 import matplotlib.pyplot as plt
 import os
 import seaborn as sns
@@ -163,12 +165,26 @@ class EvaluationMethods:
         data = pd.read_csv(self.pre_path + self.dataset_path)
         cross_tab = pd.crosstab(data[original_column], data[prediction_column])
 
-        plt.figure(figsize=(12, 10))
-        sns.heatmap(cross_tab, annot=True, fmt='d', cmap='YlGnBu')
+        # Set larger font sizes for all text elements
+        plt.rcParams.update({
+            'font.size': 20,  # Base font size
+            'axes.titlesize': 20,  # Title font size
+            'axes.labelsize': 20,  # X and Y label font size
+            'xtick.labelsize': 20,  # X tick label size
+            'ytick.labelsize': 20,  # Y tick label size
+            'legend.fontsize': 20,  # Legend font size
+            'figure.titlesize': 20  # Figure title size
+        })
 
-        plt.title(f'Heatmap of {original_column} vs. {prediction_column}')
-        plt.xlabel(prediction_column)
-        plt.ylabel(original_column)
+        plt.figure(figsize=(12, 10))
+
+        # Increase annotation font size in the heatmap
+        ax = sns.heatmap(cross_tab, annot=True, fmt='d', cmap='YlGnBu',
+                         annot_kws={"size": 20})  # Larger font for the numbers in cells
+
+        # plt.title(f'Heatmap of {original_column} vs. {prediction_column}', fontsize=20, pad=20)
+        plt.xlabel(prediction_column, fontsize=20, labelpad=10)
+        plt.ylabel(original_column, fontsize=20, labelpad=10)
 
         plt.xticks(rotation=45, ha="right")
         plt.yticks(rotation=0)
@@ -181,8 +197,13 @@ class EvaluationMethods:
         output_path = os.path.join(output_dir, f'heatmap_{original_column}_vs_{prediction_column}.png')
         plt.savefig(output_path, dpi=300, bbox_inches='tight')
 
-        plt.show()
+        # Instead of plt.show(), which causes the error
+        # plt.show()
+
         print(f"Heatmap saved at: {output_path}")
+
+        # Close the figure to free memory
+        plt.close()
 
 
 # type = "Apple"
